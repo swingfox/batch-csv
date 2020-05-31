@@ -3,10 +3,10 @@
 CSV to SQLite batch ingestion leveraging Spring Batch framework.
 ## Getting Started
 
-There are many ways to implement batch processing, however Spring has the complete toolkit with relates to batch processing. In this context we have one spring batch job that will run the ingestion. 
-In the job, we can create multiple steps which are managed by Execution Context.
+There are many ways to implement batch processing, however Spring has the complete toolkit with relates to batch processing. In this context we have one spring batch job managed by the JobLauncher class that will run the ingestion. 
+In the job, we can create multi-step batch execution flow which are managed by Execution Context.
 
-![Spring Batch Design](https://terasoluna-batch.github.io/guideline/5.0.0.RELEASE/en/Ch02_SpringBatchArchitecture.html)
+![Spring Batch Design](https://terasoluna-batch.github.io/guideline/5.0.0.RELEASE/en/images/ch02/SpringBatchArchitecture/Ch02_SpringBatchArchitecture_Architecture_ProcessFlow.png)
 
 Inside the step there is the ItemReader, ItemProcessor and ItemWriter interface that you need to implement in your program.
 
