@@ -1,13 +1,18 @@
 package com.ms3.spring.batch.service;
 
 import com.ms3.spring.batch.dto.RecordDTO;
+import com.ms3.spring.batch.mapper.RecordMapper;
+import com.ms3.spring.batch.mapper.RecordMapperImpl;
 import com.ms3.spring.batch.model.Record;
 import com.ms3.spring.batch.repository.RecordRepository;
 import com.ms3.spring.batch.service.RecordService;
 import com.ms3.spring.batch.utils.CsvWriter;
 import com.ms3.spring.batch.utils.FileWriter;
+import com.ms3.spring.batch.utils.LogWriter;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -32,11 +37,9 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest
 class RecordServiceTest {
 
     @Mock
@@ -57,12 +60,25 @@ class RecordServiceTest {
     @Mock
     private RecordRepository recordRepository;
 
-    @InjectMocks
-    RecordServiceImpl recordServiceImpl;
+    @Mock
+    private RecordMapper recordMapper;
 
-    @Before
+    @Mock
+    private LogWriter logWriter;
+
+    private RecordServiceImpl recordServiceImpl;
+
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        recordServiceImpl = spy(new RecordServiceImpl(recordRepository,
+                recordMapper,
+                jobLauncher,
+                job,
+                jobExplorer,
+                csvWriter,
+                logWriter));
+
     }
 
     @Test
@@ -76,9 +92,9 @@ class RecordServiceTest {
         final Collection<StepExecution> stepExecutions = Arrays.asList(stepExecution);
         final List<JobExecution> jobExecutions = Arrays.asList(jobExecution);
         final JobParameters parameters = new JobParameters();
-        recordServiceImpl.parameters = parameters;
 
         // stub
+        when(recordServiceImpl.createJobParams()).thenReturn(parameters);
         when(csvWriter.writeFile(anyString())).thenReturn(true);
         when(jobLauncher.run(job, parameters)).thenReturn(jobExecution);
         when(jobExecution.isRunning()).thenReturn(Boolean.TRUE).thenReturn(Boolean.FALSE);

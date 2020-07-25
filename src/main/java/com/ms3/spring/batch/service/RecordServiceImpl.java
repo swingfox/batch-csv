@@ -5,6 +5,7 @@ import com.ms3.spring.batch.mapper.RecordMapper;
 import com.ms3.spring.batch.repository.RecordRepository;
 import com.ms3.spring.batch.utils.FileWriter;
 import com.ms3.spring.batch.service.RecordService;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class RecordServiceImpl implements RecordService {
 
     private RecordRepository recordRepository;
@@ -35,28 +37,11 @@ public class RecordServiceImpl implements RecordService {
 
     private JobExplorer jobExplorer;
 
+    @Qualifier("csvWriter")
     private FileWriter csvWriter;
 
+    @Qualifier("logWriter")
     private FileWriter logWriter;
-
-    protected JobParameters parameters;
-
-
-    @Autowired
-    public RecordServiceImpl(RecordRepository recordRepository,
-                             JobLauncher jobLauncher,
-                             Job job,
-                             JobExplorer jobExplorer,
-                             @Qualifier("csvWriter") FileWriter csvWriter,
-                             @Qualifier("logWriter") FileWriter logWriter){
-        this.recordRepository = recordRepository;
-        this.jobLauncher = jobLauncher;
-        this.job = job;
-        this.jobExplorer = jobExplorer;
-        this.csvWriter = csvWriter;
-        this.logWriter = logWriter;
-        parameters = new JobParameters();
-    }
 
     @SneakyThrows
     @Override
@@ -98,8 +83,13 @@ public class RecordServiceImpl implements RecordService {
             logWriter.writeFile(sb.toString());
         });
     }
+
+    protected JobParameters createJobParams(){
+        return new JobParameters();
+    }
+
     private BatchStatus runBatchJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-        JobExecution jobExecution = jobLauncher.run(job, parameters);
+        JobExecution jobExecution = jobLauncher.run(job, createJobParams());
         log.debug("Job Execution: " + jobExecution.getStatus());
 
         log.debug("Batch is Running...");

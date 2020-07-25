@@ -2,6 +2,7 @@ package com.ms3.spring.batch.processor;
 
 import com.ms3.spring.batch.model.Record;
 import com.ms3.spring.batch.utils.FileWriter;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ParseException;
@@ -14,17 +15,12 @@ import java.util.Set;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class Processor implements ItemProcessor<Record, Record> {
 
     private Validator validator;
 
     private FileWriter csvWriter;
-
-    @Autowired
-    public Processor(Validator validator, FileWriter csvWriter){
-        this.validator = validator;
-        this.csvWriter = csvWriter;
-    }
 
     @Override
     public Record process(Record record) throws ParseException {
